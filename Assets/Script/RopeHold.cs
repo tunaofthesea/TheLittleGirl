@@ -10,8 +10,9 @@ public class RopeHold : MonoBehaviour
         {
             Destroy(collision.gameObject.GetComponent<Rigidbody2D>());
             collision.gameObject.GetComponent<Controller>().enabled = false;
+            collision.gameObject.GetComponent<PlayerRope>().enabled = true;
             collision.gameObject.GetComponent<CircleCollider2D>().enabled = false;
-            //collision.gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
+            collision.gameObject.GetComponent<Rigidbody2D>().gravityScale = 0;
             //collision.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             //Destroy(collision.gameObject.GetComponent<Rigidbody2D>());
             collision.gameObject.transform.parent = this.gameObject.transform;

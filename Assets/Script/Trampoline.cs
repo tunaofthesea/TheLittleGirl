@@ -11,14 +11,23 @@ public class Trampoline : MonoBehaviour
     private Rigidbody2D rb;
     public GameObject player;
     public bool playerHit;
+    public GameObject mushroom;
+    public bool playerJump;
+    public float jumpForce;
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        playerOn_bool = true;
+        if (collision.gameObject.tag == "Player" && playerJump == false)
+        {
+            mushroom.GetComponent<Animator>().Play("mushroomJump");
+            playerJump = true;
+        }
+            playerOn_bool = true;
         if(collision.gameObject.tag == "TrampolineBot")
         {
             rb.velocity = Vector3.zero;
             botHit = true;
-            player.GetComponent<Rigidbody2D>().AddForce(Vector3.up * 800);
+            player.GetComponent<Rigidbody2D>().AddForce(Vector3.up * jumpForce);
+            playerJump = false;
         }
     }
 

@@ -17,6 +17,7 @@ public class CenterRoll : MonoBehaviour
     public float FollowSpeed;
     private bool phase3;
     public GameObject blackFilter;
+    public bool flowerDrop_bool;
     void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player");
@@ -32,7 +33,7 @@ public class CenterRoll : MonoBehaviour
 
         else if(stopRotation && phase2)
         {
-            transform.position = Vector2.MoveTowards(transform.position, player.transform.position + new Vector3(0, 1.3f,0), FollowSpeed * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, player.transform.position + new Vector3(0, 0.6f,0), FollowSpeed * Time.deltaTime);
             if(Vector2.Distance(transform.position, player.transform.position) < 0.8f)
             {
                 phase3 = true;
@@ -44,13 +45,24 @@ public class CenterRoll : MonoBehaviour
         {
             transform.position = player.transform.position + new Vector3(0, 0.6f, 0);
             transform.Rotate(0, 0, Time.deltaTime * RotationSpeed, Space.Self);
+            transform.parent = player.transform;
         }
         if (flowerCount == 0)
         {
             stopRotation = true;
-            if(coroutine_activated == false)
+            if (hitNumber > 3)  // if lower than 4 hits, cant pass to the last phase
             {
-                StartCoroutine(slowSpawnQue());
+                if (coroutine_activated == false)
+                {
+                    StartCoroutine(slowSpawnQue());
+                }
+            }
+            else
+            {
+                if (flowerDrop_bool == false)
+                {
+                    dropTheFlowers();
+                }
             }
         }
     }
@@ -78,6 +90,7 @@ public class CenterRoll : MonoBehaviour
     IEnumerator slowSpawnQue()
     {
         coroutine_activated = true;
+        GetComponent<CircleCollider2D>().enabled = false;
         yield return new WaitForSeconds(0.4f);
         for (int i = 0; i < hitboxes.Length; i++)
         {
@@ -105,7 +118,18 @@ public class CenterRoll : MonoBehaviour
         phase2 = true;
     }
 
-    
+    void dropTheFlowers()
+    {
+        flowerDrop_bool = true;
+        for (int i = 0; i < hitboxes.Length; i++)
+        {
+            if (hitboxes[i].GetComponent<Hitbox>().hitbox_bool == true)
+            {
+                hitboxes[i].transform.GetChild(0).GetComponent<Rigidbody2D>().gravityScale = 1;
+                hitboxes[i].transform.GetChild(0).transform.parent = null;
+            }
+        }
+    }
 
 
 }
