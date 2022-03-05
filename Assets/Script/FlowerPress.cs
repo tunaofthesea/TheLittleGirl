@@ -5,6 +5,7 @@ using UnityEngine;
 public class FlowerPress : MonoBehaviour
 {
     public GameObject pollen;
+    public GameObject star;
     public float yDistance;
     public bool coroutineActivated;
     public GameObject player;
@@ -54,5 +55,6 @@ public class FlowerPress : MonoBehaviour
         coroutineActivated = true;
         yield return null;
         GameObject pol = Instantiate(pollen, transform.position - new Vector3(0, yDistance, 0), Quaternion.identity) as GameObject;
+        GameObject str = Instantiate(star, transform.position - new Vector3(0, yDistance, 0), Quaternion.identity) as GameObject;
     }
 }

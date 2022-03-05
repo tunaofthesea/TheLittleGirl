@@ -16,8 +16,14 @@ public class Controller : MonoBehaviour
     public int jumpCount;
     public bool doubleJump_activated;
     public GameObject girl;
+    public bool flipped;
+
+    public bool airHold_bool;
 
     public bool randIdle_bool;
+
+    public Vector2 rb_velocity;
+    public Vector2 initialVelocity;
     private void OnCollisionEnter2D(Collision2D collision)
     {
         {
@@ -25,7 +31,13 @@ public class Controller : MonoBehaviour
             {
                 //initialY = transform.position.y;
                 jumpingBool = false;
+                girl.GetComponent<Animator>().SetBool("Jump", false);
+                if (girl.GetComponent<Animator>().GetCurrentAnimatorStateInfo(0).IsName("girl_Jump"))
+                {
+                    girl.GetComponent<Animator>().Play("girl_Idle");
+                }
                 jumpCount = 0;
+                airHold_bool = false;
             }
         }
     }
@@ -44,9 +56,11 @@ public class Controller : MonoBehaviour
         {
             isMoving = true;
             transform.position += new Vector3(1, 0, 0) * speed * Time.deltaTime;
+            girl.GetComponent<SpriteRenderer>().flipX = false;
             if (!jumpingBool)
             {
                 //GetComponent<SpriteRenderer>().sprite = right;
+                //girl.GetComponent<SpriteRenderer>().flipX = false;
                 girl.GetComponent<Animator>().SetBool("Right", true);
             }
         }
@@ -54,10 +68,12 @@ public class Controller : MonoBehaviour
         {
             isMoving = true;
             transform.position -= new Vector3(1, 0, 0) * speed * Time.deltaTime;
+            girl.GetComponent<SpriteRenderer>().flipX = true;
             if (!jumpingBool)
             {
                 //GetComponent<SpriteRenderer>().sprite = left;
-                girl.GetComponent<Animator>().SetBool("Left", true);
+                //girl.GetComponent<SpriteRenderer>().flipX = true;
+                girl.GetComponent<Animator>().SetBool("Right", true);
             }
         }
         else
@@ -76,6 +92,11 @@ public class Controller : MonoBehaviour
                 rb.AddForce(Vector2.up * JumpForce);
                 jumpingBool = true;
                 jumpCount++;
+                //girl.GetComponent<Animator>().Play("girl_Idle");
+                //girl.GetComponent<Animator>().SetBool("Jump", true);
+                girl.GetComponent<Animator>().Play("girl_Idle");
+                girl.GetComponent<Animator>().SetBool("Jump", true);
+
             }
         }
        else
@@ -85,6 +106,7 @@ public class Controller : MonoBehaviour
                 rb.velocity = Vector2.zero;
                 rb.AddForce(Vector2.up * JumpForce);
                 jumpingBool = true;
+                //girl.GetComponent<Animator>().SetBool("Jump", true);
             }
         }
 
@@ -92,12 +114,25 @@ public class Controller : MonoBehaviour
         {
             StartCoroutine(randomIdleTiming());
         }
+       /* if(rb.velocity.x < 0 && flipped == false)
+        {
+            girl.GetComponent<SpriteRenderer>().flipX = true;
+            flipped = true;
+        }*/
+       if(jumpingBool == true)
+        {
+            if (rb.velocity.y < 0 && !airHold_bool)
+            {
+                initialVelocity = rb.velocity;
+                StartCoroutine(holdOnAir());
+            }
+        }
+        rb_velocity = rb.velocity;
 
     }
 
     void flowerQuest()
     {
-
     }
     public void rotatePlayer()
     {
@@ -125,6 +160,16 @@ public class Controller : MonoBehaviour
         float randomFloat = Random.Range(5f, 9f);
         yield return new WaitForSeconds(randomFloat);
         randIdle_bool = false;
+
+    }
+
+    IEnumerator holdOnAir()
+    {
+        airHold_bool = true;
+        GetComponent<Rigidbody2D>().gravityScale = 0;
+        yield return new WaitForSeconds(0.1f);
+        //rb.velocity = initialVelocity;
+        GetComponent<Rigidbody2D>().gravityScale = 3;
 
     }
 }

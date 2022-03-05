@@ -13,11 +13,15 @@ public class RoofInclined : MonoBehaviour
     public GameObject player;
     public float gravityValue1;
     public float newVelocity;
+    public float additionalGravity;
+
+    public Vector2 jumpVector;
+    public Vector2 rbVelocity;
     private void OnCollisionEnter2D(Collision2D collision)
     {
         collision_bool = true;
         collisionGO = collision.gameObject;
-        collisionGO.GetComponent<Rigidbody2D>().gravityScale = 1.3f;
+        collisionGO.GetComponent<Rigidbody2D>().gravityScale = additionalGravity;
         //collisionGO.GetComponent<Rigidbody2D>().velocity += new Vector2(newVelocity, 0);
         collisionGO.transform.rotation = Quaternion.Euler(new Vector3(0, 0, -angles));
         collisionGO.GetComponent<Controller>().enabled = false;
@@ -50,6 +54,6 @@ public class RoofInclined : MonoBehaviour
 
     void AddForce()
     {
-        collisionGO.GetComponent<Rigidbody2D>().AddForce(new Vector2(1, 5) * jumpMagnitude);
+        collisionGO.GetComponent<Rigidbody2D>().AddForce(jumpVector * jumpMagnitude);
     }
 }
